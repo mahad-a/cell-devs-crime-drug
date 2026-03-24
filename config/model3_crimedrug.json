@@ -1,0 +1,17 @@
+{
+  "scenario": {
+    "shape": [20, 20],
+    "origin": [0, 0],
+    "wrapped": true
+  },
+  "cells": {
+    "default": {
+      "delay": "transport",
+      "model": "crimedrug",
+      "state": { "lrp": 0, "hrp": 0, "crime": 0, "incap": 0 },
+      "neighborhood": [
+        { "type": "von_neumann", "range": 1 }
+      ]
+    }
+  }
+}
