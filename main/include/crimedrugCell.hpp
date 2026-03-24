@@ -33,7 +33,6 @@ public:
         int total = 0, lrp_count = 0;
         bool any_hrp2 = false;
         for (const auto& [nId, nData] : neighborhood) {
-            if (nId == cellId) continue;
             ++total;
             if (nData.state->lrp == 1)  ++lrp_count;
             if (nData.state->hrp == 2)  any_hrp2 = true;

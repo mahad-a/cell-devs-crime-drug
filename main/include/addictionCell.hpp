@@ -27,7 +27,6 @@ public:
 
         int total = 0, lrp_count = 0;
         for (const auto& [nId, nData] : neighborhood) {
-            if (nId == cellId) continue;
             ++total;
             if (nData.state->lrp == 1) ++lrp_count;
         }
