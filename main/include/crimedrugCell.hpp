@@ -63,7 +63,7 @@ public:
             }
         } else {
             // Recovery from lrp (only if not escalated further)
-            if (state.hrp == 0 && state.crime == 0 && uniform(rng) < 0.03) {
+            if (state.hrp == 0 && state.crime == 0 && uniform(rng) < 0.005) {
                 state.lrp = 0;
             }
         }
@@ -75,7 +75,7 @@ public:
             }
         } else {
             // Recovery from hrp (only if not escalated to crime)
-            if (state.crime == 0 && uniform(rng) < 0.02) {
+            if (state.crime == 0 && uniform(rng) < 0.005) {
                 state.hrp = 0;
             }
         }
@@ -90,7 +90,7 @@ public:
             }
         } else {
             // Recovery from crime (only if not incapacitated)
-            if (state.incap == 0 && uniform(rng) < 0.02) {
+            if (state.incap == 0 && uniform(rng) < 0.005) {
                 state.crime = 0;
             }
         }
@@ -102,7 +102,7 @@ public:
             }
         } else {
             // Recovery from incapacitation
-            if (uniform(rng) < 0.05) {
+            if (uniform(rng) < 0.01) {
                 state.incap = 0;
             }
         }

@@ -54,7 +54,7 @@ public:
             }
         } else {
             // Recovery
-            if (uniform(rng) < 0.03) {
+            if (uniform(rng) < 0.005) {
                 state.lrp = 0;
             }
         }

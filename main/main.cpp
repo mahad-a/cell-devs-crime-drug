@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
     srand(static_cast<unsigned>(time(0)));
 
     std::string configFilePath = argv[1];
-    double simTime = (argc > 2) ? std::stod(argv[2]) : 500;
+    double simTime = (argc > 2) ? std::stod(argv[2]) : 2000;
 
     // build the coupled cell-devs model from the json config
     auto model = std::make_shared<GridCellDEVSCoupled<crimedrugsState, double>>(

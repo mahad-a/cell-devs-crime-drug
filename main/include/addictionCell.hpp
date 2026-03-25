@@ -56,7 +56,7 @@ public:
             }
         } else {
             // Recovery from lrp (only if not yet hrp)
-            if (state.hrp == 0 && uniform(rng) < 0.03) {
+            if (state.hrp == 0 && uniform(rng) < 0.005) {
                 state.lrp = 0;
             }
         }
@@ -68,7 +68,7 @@ public:
             }
         } else {
             // Recovery from hrp back to lrp
-            if (uniform(rng) < 0.02) {
+            if (uniform(rng) < 0.005) {
                 state.hrp = 0;
             }
         }
