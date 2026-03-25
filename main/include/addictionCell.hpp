@@ -38,9 +38,6 @@ public:
             } else if (norm_lrp(rng) > 0.6) {
                 state.lrp = 1;
             }
-        } else if (state.hrp == 0 && norm_lrp(rng) > 0.85) {
-            // Recovery from lrp (only if not yet hrp)
-            state.lrp = 0;
         }
 
         // hrp layer
@@ -48,9 +45,6 @@ public:
             if (orig_lrp == 1 && all_neighbours_lrp) {
                 state.hrp = 2;
             }
-        } else if (norm_lrp(rng) > 0.80) {
-            // Recovery from hrp back to lrp
-            state.hrp = 0;
         }
 
         return state;
