@@ -6,7 +6,7 @@
   },
   "cells": {
     "default": {
-      "delay": "inertial",
+      "delay": "transport",
       "model": "crimedrug",
       "state": { "lrp": 0, "hrp": 0, "crime": 0, "incap": 0, "display": 0 },
       "neighborhood": [
