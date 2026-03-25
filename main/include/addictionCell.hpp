@@ -50,7 +50,14 @@ public:
             }
             // default: stay 0
         }
-        // if state.hrp == 2: absorbing – no change
+        // Recovery: probabilistic recovery from each stage.
+        static thread_local std::uniform_real_distribution<double> uniform(0.0, 1.0);
+        if (state.hrp == 2 && uniform(rng) < 0.15) {
+            state.hrp = 0;   // addiction treatment clears hrp and lrp
+            state.lrp = 0;
+        } else if (state.lrp == 1 && uniform(rng) < 0.10) {
+            state.lrp = 0;   // person quits low-risk drug use
+        }
 
         return state;
     }

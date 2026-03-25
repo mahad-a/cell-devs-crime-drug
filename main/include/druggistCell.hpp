@@ -37,7 +37,13 @@ public:
         else if (norm(rng) > 0.7) {
             state.lrp = 1;
         }
-        // R3 / default: lrp=1 is absorbing; lrp=0 stays 0 – no action needed.
+        // R3 / default: lrp=0 stays 0 – no action needed.
+
+        // Recovery: LRP person probabilistically quits drug use.
+        static thread_local std::uniform_real_distribution<double> uniform(0.0, 1.0);
+        if (state.lrp == 1 && uniform(rng) < 0.15) {
+            state.lrp = 0;
+        }
 
         return state;
     }

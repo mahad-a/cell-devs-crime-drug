@@ -75,7 +75,18 @@ public:
                 state.incap = 4;                  // R1
             }
         }
-        // incap=4 is absorbing.
+        // Recovery cascade: one stage clears per step (most severe first).
+        static thread_local std::uniform_real_distribution<double> uniform(0.0, 1.0);
+        if (state.incap == 4 && uniform(rng) < 0.20) {
+            state.incap = 0;   // released / rehabilitated
+        } else if (state.crime == 3 && state.incap == 0 && uniform(rng) < 0.15) {
+            state.crime = 0;   // stopped offending
+        } else if (state.hrp == 2 && state.crime == 0 && uniform(rng) < 0.15) {
+            state.hrp = 0;     // addiction treatment
+            state.lrp = 0;
+        } else if (state.lrp == 1 && state.hrp == 0 && uniform(rng) < 0.10) {
+            state.lrp = 0;     // full recovery
+        }
 
         return state;
     }
