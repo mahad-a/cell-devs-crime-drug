@@ -8,7 +8,7 @@
     "default": {
       "delay": "transport",
       "model": "crimedrug",
-      "state": { "lrp": 0, "hrp": 0, "crime": 0, "incap": 0 },
+      "state": { "lrp": 0 },
       "neighborhood": [
         { "type": "von_neumann", "range": 1 }
       ]

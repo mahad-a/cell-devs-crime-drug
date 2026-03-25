@@ -26,12 +26,12 @@ bool operator!=(const crimedrugsState& x, const crimedrugsState& y) {
     return x.lrp != y.lrp || x.hrp != y.hrp || x.crime != y.crime || x.incap != y.incap;
 }
 
-// Parse initial state from JSON config.
+// Parse initial state from JSON config. All fields are optional and default to 0.
 void from_json(const nlohmann::json& j, crimedrugsState& s) {
-    j.at("lrp").get_to(s.lrp);
-    j.at("hrp").get_to(s.hrp);
-    j.at("crime").get_to(s.crime);
-    j.at("incap").get_to(s.incap);
+    s.lrp   = j.value("lrp",   0);
+    s.hrp   = j.value("hrp",   0);
+    s.crime = j.value("crime", 0);
+    s.incap = j.value("incap", 0);
 }
 
 #endif // CADMIUM_CELLDEVS_CRIMEDRUGS_STATE_HPP_
