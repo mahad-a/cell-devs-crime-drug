@@ -13,6 +13,7 @@ using namespace cadmium::celldevs;
 class addictionCell : public GridCell<crimedrugsState, double> {
     coordinates myId;
 
+    // checks if nId is a direct (distance-1) von neumann neighbour, with toroidal wrap for the 20x20 grid
     bool isImmediate(const coordinates& nId) const {
         int dx = std::abs(nId[0] - myId[0]);
         int dy = std::abs(nId[1] - myId[1]);
@@ -30,12 +31,14 @@ public:
         crimedrugsState state,
         const std::unordered_map<coordinates, NeighborData<crimedrugsState, double>>& neighborhood
     ) const override {
+        // per-thread rngs, initialized once per thread to avoid contention
         static thread_local std::mt19937 rng(std::random_device{}());
         static thread_local std::normal_distribution<double> norm_lrp(0.4, 0.3);
         static thread_local std::uniform_real_distribution<double> uniform(0.0, 1.0);
 
         const int orig_lrp = state.lrp;
 
+        // count immediate neighbours and how many are lrp active
         int imm_total = 0, imm_lrp = 0;
         for (const auto& [nId, nData] : neighborhood) {
             if (!isImmediate(nId)) continue;

@@ -13,6 +13,7 @@ using namespace cadmium::celldevs;
 class crimedrugCell : public GridCell<crimedrugsState, double> {
     coordinates myId;
 
+    // toroidal distance check on a 20x20 grid
     bool isImmediate(const coordinates& nId) const {
         int dx = std::abs(nId[0] - myId[0]);
         int dy = std::abs(nId[1] - myId[1]);
@@ -30,9 +31,10 @@ public:
         crimedrugsState state,
         const std::unordered_map<coordinates, NeighborData<crimedrugsState, double>>& neighborhood
     ) const override {
+        // per-thread rngs, initialized once per thread to avoid contention
         static thread_local std::mt19937 rng(std::random_device{}());
         static thread_local std::normal_distribution<double> norm_lrp(0.4, 0.3);
-        static thread_local std::normal_distribution<double> norm_crime(0.4, 0.1);
+        static thread_local std::normal_distribution<double> norm_crime(0.4, 0.1);  // tighter spread for crime onset
         static thread_local std::normal_distribution<double> norm_incap(0.4, 0.3);
         static thread_local std::uniform_real_distribution<double> uniform(0.0, 1.0);
 
@@ -42,8 +44,10 @@ public:
 
         int imm_total = 0, imm_lrp = 0;
         bool any_hrp2 = false;
+        // any_hrp2 scans the full extended neighbourhood (not just immediate),
+        // so crime can be triggered by hrp influence from further away
         for (const auto& [nId, nData] : neighborhood) {
-            if (nData.state->hrp == 2) any_hrp2 = true;  // check all neighbours for hrp
+            if (nData.state->hrp == 2) any_hrp2 = true;
             if (!isImmediate(nId)) continue;
             ++imm_total;
             if (nData.state->lrp == 1) ++imm_lrp;
@@ -76,11 +80,12 @@ public:
             }
         }
 
-        // crime layer
+        // crime layer — crime=3 is the active crime stage value
         if (orig_crime == 0) {
             if (norm_crime(rng) > 0.6) {
                 state.crime = 3;
             } else if (orig_hrp == 2 && any_hrp2) {
+                // hrp cell surrounded by other hrp cells escalates to crime
                 state.crime = 3;
             }
         } else {

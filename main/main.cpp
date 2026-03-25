@@ -13,6 +13,7 @@
 using namespace cadmium::celldevs;
 using namespace cadmium;
 
+// cell factory: maps the "cellModel" string from the json config to the right cell type
 std::shared_ptr<GridCell<crimedrugsState, double>> addGridCell(
     const coordinates& cellId,
     const std::shared_ptr<const GridCellConfig<crimedrugsState, double>>& cellConfig)
@@ -43,10 +44,12 @@ int main(int argc, char** argv) {
     std::string configFilePath = argv[1];
     double simTime = (argc > 2) ? std::stod(argv[2]) : 500;
 
+    // build the coupled cell-devs model from the json config
     auto model = std::make_shared<GridCellDEVSCoupled<crimedrugsState, double>>(
         "crimedrug", addGridCell, configFilePath);
     model->buildModel();
 
+    // wire up the coordinator, attach csv logger, and run
     auto rootCoordinator = RootCoordinator(model);
     rootCoordinator.setLogger<CSVLogger>("grid_log.csv", ";");
 
