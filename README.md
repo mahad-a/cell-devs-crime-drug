@@ -44,16 +44,16 @@ The executable is placed in `bin/crimedrug_sim`.
 
 ```bash
 # model 1: drug-use spread only
-./bin/crimedrug_sim config/model1_druggist_config.json 500
+./bin/crimedrug_sim config/druggist_config.json 500
 
 # model 2: addiction layer
-./bin/crimedrug_sim config/model2_addiction_config.json 500
+./bin/crimedrug_sim config/addiction_config.json 500
 
 # model 3: full crime + drug model
-./bin/crimedrug_sim config/model3_crimedrug_config.json 500
+./bin/crimedrug_sim config/crimedrug_config.json 500
 ```
 
-Output is written to `grid_log.csv` (semicolon-delimited) in the working directory.
+Output is written to `grid_log.csv` (semicolon-delimited) in the working directory. However, it was renamed to {model_name}_log.csv in this repository for ease of use.
 
 ## Scenario configs
 
