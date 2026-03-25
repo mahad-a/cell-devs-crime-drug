@@ -11,7 +11,7 @@
       "cell_type": "druggist",
       "state": { "lrp": 0, "hrp": 0, "crime": 0, "incap": 0, "display": 0 },
       "neighborhood": [
-        { "type": "von_neumann", "range": 1 }
+        { "type": "von_neumann", "range": 2 }
       ]
     }
   },
@@ -35,6 +35,11 @@
       "colors": [[255, 255, 255], [128, 0, 128]],
       "breaks": [0, 0.5, 4],
       "field": "incap"
+    },
+    {
+      "colors": [[255, 255, 0], [0, 0, 255]],
+      "breaks": [0, 0.5, 1],
+      "field": "display"
     }
   ]
 }
