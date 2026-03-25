@@ -34,21 +34,21 @@ public:
         // per-thread rngs, initialized once per thread to avoid contention
         static thread_local std::mt19937 rng(std::random_device{}());
         static thread_local std::normal_distribution<double> norm(0.4, 0.3);
+        static thread_local std::uniform_real_distribution<double> uniform(0.0, 1.0);
 
-        int imm_total = 0, imm_lrp = 0;
+        int imm_lrp = 0;
         for (const auto& [nId, nData] : neighborhood) {
             if (!isImmediate(nId)) continue;
-            ++imm_total;
             if (nData.state->lrp == 1) ++imm_lrp;
         }
 
         if (state.lrp == 0) {
-            // R1: at least 2 immediate neighbours are druggists
-            if (imm_lrp >= 2) {
+            // R1: probabilistic spread — 0.5% chance per step if any immediate LRP neighbour
+            if (imm_lrp >= 1 && uniform(rng) < 0.005) {
                 state.lrp = 1;
             }
-            // R2: random adoption
-            else if (norm(rng) > 1.0) {
+            // R2: very rare random seed (~0.012% chance)
+            else if (norm(rng) > 1.5) {
                 state.lrp = 1;
             }
         }

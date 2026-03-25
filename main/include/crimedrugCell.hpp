@@ -34,51 +34,49 @@ public:
         // per-thread rngs, initialized once per thread to avoid contention
         static thread_local std::mt19937 rng(std::random_device{}());
         static thread_local std::normal_distribution<double> norm_lrp(0.4, 0.3);
-        static thread_local std::normal_distribution<double> norm_incap(0.4, 0.3);
+        static thread_local std::uniform_real_distribution<double> uniform(0.0, 1.0);
 
         const int orig_lrp   = state.lrp;
         const int orig_hrp   = state.hrp;
         const int orig_crime = state.crime;
 
-        int imm_total = 0, imm_lrp = 0;
+        int imm_lrp = 0;
         bool any_hrp2 = false;
-        // any_hrp2 scans the full extended neighbourhood (not just immediate),
-        // so crime can be triggered by hrp influence from further away
         for (const auto& [nId, nData] : neighborhood) {
             if (nData.state->hrp == 2) any_hrp2 = true;
             if (!isImmediate(nId)) continue;
-            ++imm_total;
             if (nData.state->lrp == 1) ++imm_lrp;
         }
-        // lrp layer — spread if 2+ immediate neighbours are lrp, or random adoption
+
+        // lrp layer — probabilistic spread (0.5%) if any immediate LRP neighbour, or very rare seed
         if (orig_lrp == 0) {
-            if (imm_lrp >= 2) {
+            if (imm_lrp >= 1 && uniform(rng) < 0.005) {
                 state.lrp = 1;
-            } else if (norm_lrp(rng) > 1.0) {
+            } else if (norm_lrp(rng) > 1.5) {
                 state.lrp = 1;
             }
         }
         // no recovery from lrp
 
-        // hrp layer — escalate if already lrp and 2+ immediate neighbours are also lrp
+        // hrp layer — probabilistic escalation (0.5%) once already lrp and any immediate LRP neighbour
         if (state.hrp == 0) {
-            if (orig_lrp == 1 && imm_lrp >= 2) {
+            if (orig_lrp == 1 && imm_lrp >= 1 && uniform(rng) < 0.005) {
                 state.hrp = 2;
             }
         }
         // no recovery from hrp
 
-        // crime layer — only hrp cells can escalate; trigger if any extended neighbour is hrp
+        // crime layer — probabilistic (0.5%) for hrp cells with any hrp neighbour in range
         if (orig_crime == 0) {
-            if (orig_hrp == 2 && any_hrp2) {
+            if (orig_hrp == 2 && any_hrp2 && uniform(rng) < 0.005) {
                 state.crime = 3;
             }
         }
         // no recovery from crime
 
-        // incap layer — crime+hrp cell escalates to incapacitation
+        // incap layer — 10% chance per step once crime+hrp both active
         if (state.incap == 0) {
-            if (orig_crime == 3 && orig_hrp == 2 && norm_incap(rng) > 0.1) {
+            if (orig_crime == 3 && orig_hrp == 2 && uniform(rng) < 0.1) {
                 state.incap = 4;
             }
         }
