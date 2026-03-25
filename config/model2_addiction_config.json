@@ -8,7 +8,7 @@
     "default": {
       "delay": "inertial",
       "model": "addiction",
-      "state": { "lrp": 0 },
+      "state": { "stage": 0 },
       "neighborhood": [
         { "type": "von_neumann", "range": 1 }
       ]
@@ -16,9 +16,9 @@
   },
   "viewer": [
     {
-      "colors": [[255, 255, 0], [0, 0, 255]],
-      "breaks": [0, 0.5, 1],
-      "field": "lrp"
+      "colors": [[255, 255, 0], [0, 0, 255], [255, 0, 0]],
+      "breaks": [0, 0.5, 1.5, 2],
+      "field": "stage"
     }
   ]
 }
