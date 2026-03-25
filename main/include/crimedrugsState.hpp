@@ -1,6 +1,7 @@
 #ifndef CADMIUM_CELLDEVS_CRIMEDRUGS_STATE_HPP_
 #define CADMIUM_CELLDEVS_CRIMEDRUGS_STATE_HPP_
 
+#include <algorithm>
 #include <iostream>
 #include <nlohmann/json.hpp>
 
@@ -13,9 +14,10 @@ struct crimedrugsState {
     crimedrugsState() : lrp(0), hrp(0), crime(0), incap(0) {}
 };
 
-// Output all state variables for CSV/visualization (viewer maps by field name/position).
+// Output the highest active stage as a single integer (0–4) for the Cell-DEVS viewer.
+// 0=default, 1=LRP, 2=HRP, 3=crime, 4=incapacitated
 std::ostream& operator<<(std::ostream& os, const crimedrugsState& x) {
-    os << "<" << x.lrp << ", " << x.hrp << ", " << x.crime << ", " << x.incap << ">";
+    os << "<" << std::max({x.lrp, x.hrp, x.crime, x.incap}) << ">";
     return os;
 }
 
