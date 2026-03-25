@@ -49,12 +49,12 @@ public:
                 state.lrp = 1;
             }
             // R2: random adoption
-            else if (norm(rng) > 0.7) {
+            else if (norm(rng) > 1.0) {
                 state.lrp = 1;
             }
         } else {
             // Recovery
-            if (uniform(rng) < 0.15) {
+            if (uniform(rng) < 0.03) {
                 state.lrp = 0;
             }
         }

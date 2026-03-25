@@ -51,12 +51,12 @@ public:
         if (orig_lrp == 0) {
             if (all_neighbours_lrp) {
                 state.lrp = 1;
-            } else if (norm_lrp(rng) > 0.6) {
+            } else if (norm_lrp(rng) > 1.0) {
                 state.lrp = 1;
             }
         } else {
             // Recovery from lrp (only if not yet hrp)
-            if (state.hrp == 0 && uniform(rng) < 0.10) {
+            if (state.hrp == 0 && uniform(rng) < 0.03) {
                 state.lrp = 0;
             }
         }
@@ -68,7 +68,7 @@ public:
             }
         } else {
             // Recovery from hrp back to lrp
-            if (uniform(rng) < 0.15) {
+            if (uniform(rng) < 0.02) {
                 state.hrp = 0;
             }
         }

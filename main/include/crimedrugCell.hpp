@@ -58,12 +58,12 @@ public:
         if (orig_lrp == 0) {
             if (all_neighbours_lrp) {
                 state.lrp = 1;
-            } else if (norm_lrp(rng) > 0.6) {
+            } else if (norm_lrp(rng) > 1.0) {
                 state.lrp = 1;
             }
         } else {
             // Recovery from lrp (only if not escalated further)
-            if (state.hrp == 0 && state.crime == 0 && uniform(rng) < 0.10) {
+            if (state.hrp == 0 && state.crime == 0 && uniform(rng) < 0.03) {
                 state.lrp = 0;
             }
         }
@@ -75,7 +75,7 @@ public:
             }
         } else {
             // Recovery from hrp (only if not escalated to crime)
-            if (state.crime == 0 && uniform(rng) < 0.15) {
+            if (state.crime == 0 && uniform(rng) < 0.02) {
                 state.hrp = 0;
             }
         }
@@ -90,7 +90,7 @@ public:
             }
         } else {
             // Recovery from crime (only if not incapacitated)
-            if (state.incap == 0 && uniform(rng) < 0.15) {
+            if (state.incap == 0 && uniform(rng) < 0.02) {
                 state.crime = 0;
             }
         }
@@ -102,7 +102,7 @@ public:
             }
         } else {
             // Recovery from incapacitation
-            if (uniform(rng) < 0.20) {
+            if (uniform(rng) < 0.05) {
                 state.incap = 0;
             }
         }
