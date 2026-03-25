@@ -8,6 +8,7 @@
     "default": {
       "delay": "transport",
       "model": "crimedrug",
+      "cell_type": "crimedrug",
       "state": { "lrp": 0, "hrp": 0, "crime": 0, "incap": 0, "display": 0 },
       "neighborhood": [
         { "type": "von_neumann", "range": 2 }
@@ -15,6 +16,26 @@
     }
   },
   "viewer": [
+    {
+      "colors": [[255, 255, 255], [255, 0, 0]],
+      "breaks": [0, 0.5, 1],
+      "field": "lrp"
+    },
+    {
+      "colors": [[255, 255, 255], [0, 255, 0]],
+      "breaks": [0, 0.5, 2],
+      "field": "hrp"
+    },
+    {
+      "colors": [[255, 255, 255], [255, 165, 0]],
+      "breaks": [0, 0.5, 3],
+      "field": "crime"
+    },
+    {
+      "colors": [[255, 255, 255], [128, 0, 128]],
+      "breaks": [0, 0.5, 4],
+      "field": "incap"
+    },
     {
       "colors": [[255, 255, 0], [0, 0, 255], [255, 0, 0], [0, 0, 0], [128, 128, 128]],
       "breaks": [0, 0.5, 1.5, 2.5, 3.5, 4],
