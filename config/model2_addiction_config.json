@@ -6,7 +6,7 @@
   },
   "cells": {
     "default": {
-      "delay": "transport",
+      "delay": "inertial",
       "model": "addiction",
       "state": { "lrp": 0 },
       "neighborhood": [
