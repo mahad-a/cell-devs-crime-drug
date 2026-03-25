@@ -21,6 +21,7 @@ public:
     ) const override {
         static thread_local std::mt19937 rng(std::random_device{}());
         static thread_local std::normal_distribution<double> norm(0.4, 0.3);
+        static thread_local std::uniform_real_distribution<double> uniform(0.0, 1.0);
 
         int total = 0, lrp_count = 0;
         for (const auto& [nId, nData] : neighborhood) {
@@ -28,13 +29,20 @@ public:
             if (nData.state->lrp == 1) ++lrp_count;
         }
 
-        // R1: all 4 neighbours are druggists
-        if (state.lrp == 0 && total == 4 && lrp_count == 4) {
-            state.lrp = 1;
-        }
-        // R2: random adoption
-        else if (state.lrp == 0 && norm(rng) > 0.7) {
-            state.lrp = 1;
+        if (state.lrp == 0) {
+            // R1: all 4 neighbours are druggists
+            if (total == 4 && lrp_count == 4) {
+                state.lrp = 1;
+            }
+            // R2: random adoption
+            else if (norm(rng) > 0.7) {
+                state.lrp = 1;
+            }
+        } else {
+            // Recovery: ~15% chance to return to normal
+            if (uniform(rng) < 0.15) {
+                state.lrp = 0;
+            }
         }
 
         return state;

@@ -23,6 +23,7 @@ public:
         static thread_local std::normal_distribution<double> norm_lrp(0.4, 0.3);
         static thread_local std::normal_distribution<double> norm_crime(0.4, 0.1);
         static thread_local std::normal_distribution<double> norm_incap(0.4, 0.3);
+        static thread_local std::uniform_real_distribution<double> uniform(0.0, 1.0);
 
         const int orig_lrp   = state.lrp;
         const int orig_hrp   = state.hrp;
@@ -32,8 +33,8 @@ public:
         bool any_hrp2 = false;
         for (const auto& [nId, nData] : neighborhood) {
             ++total;
-            if (nData.state->lrp == 1)  ++lrp_count;
-            if (nData.state->hrp == 2)  any_hrp2 = true;
+            if (nData.state->lrp == 1) ++lrp_count;
+            if (nData.state->hrp == 2) any_hrp2 = true;
         }
         const bool all_neighbours_lrp = (total == 4 && lrp_count == 4);
 
@@ -44,12 +45,22 @@ public:
             } else if (norm_lrp(rng) > 0.6) {
                 state.lrp = 1;
             }
+        } else {
+            // Recovery from lrp (only if not escalated further)
+            if (state.hrp == 0 && state.crime == 0 && uniform(rng) < 0.10) {
+                state.lrp = 0;
+            }
         }
 
         // hrp layer
         if (state.hrp == 0) {
             if (orig_lrp == 1 && all_neighbours_lrp) {
                 state.hrp = 2;
+            }
+        } else {
+            // Recovery from hrp (only if not escalated to crime)
+            if (state.crime == 0 && uniform(rng) < 0.15) {
+                state.hrp = 0;
             }
         }
 
@@ -60,12 +71,22 @@ public:
             } else if (orig_hrp == 2 && any_hrp2) {
                 state.crime = 3;
             }
+        } else {
+            // Recovery from crime (only if not incapacitated)
+            if (state.incap == 0 && uniform(rng) < 0.15) {
+                state.crime = 0;
+            }
         }
 
         // incap layer
         if (state.incap == 0) {
             if (orig_crime == 3 && orig_hrp == 2 && norm_incap(rng) > 0.1) {
                 state.incap = 4;
+            }
+        } else {
+            // Recovery from incapacitation
+            if (uniform(rng) < 0.20) {
+                state.incap = 0;
             }
         }
 

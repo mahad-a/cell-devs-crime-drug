@@ -21,6 +21,7 @@ public:
     ) const override {
         static thread_local std::mt19937 rng(std::random_device{}());
         static thread_local std::normal_distribution<double> norm_lrp(0.4, 0.3);
+        static thread_local std::uniform_real_distribution<double> uniform(0.0, 1.0);
 
         const int orig_lrp = state.lrp;
 
@@ -38,12 +39,22 @@ public:
             } else if (norm_lrp(rng) > 0.6) {
                 state.lrp = 1;
             }
+        } else {
+            // Recovery from lrp (only if not yet hrp)
+            if (state.hrp == 0 && uniform(rng) < 0.10) {
+                state.lrp = 0;
+            }
         }
 
         // hrp layer
         if (state.hrp == 0) {
             if (orig_lrp == 1 && all_neighbours_lrp) {
                 state.hrp = 2;
+            }
+        } else {
+            // Recovery from hrp back to lrp
+            if (uniform(rng) < 0.15) {
+                state.hrp = 0;
             }
         }
 
