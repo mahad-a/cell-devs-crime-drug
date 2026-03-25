@@ -34,7 +34,7 @@ public:
         // per-thread rngs, initialized once per thread to avoid contention
         static thread_local std::mt19937 rng(std::random_device{}());
         static thread_local std::normal_distribution<double> norm_lrp(0.4, 0.3);
-        static thread_local std::uniform_real_distribution<double> uniform(0.0, 1.0);
+        static thread_local std::uniform_real_distribution<double> uni(0.0, 1.0);
 
         const int orig_lrp = state.lrp;
 
@@ -45,19 +45,21 @@ public:
             if (nData.state->lrp == 1) ++imm_lrp;
         }
 
-        // lrp layer — probabilistic spread (0.5%) if any immediate LRP neighbour, or very rare seed
+        // lrp layer — probabilistic spread: 70% with 2+ neighbours, 15% with 1, ~2.3% spontaneous
         if (orig_lrp == 0) {
-            if (imm_lrp >= 1 && uniform(rng) < 0.005) {
-                state.lrp = 1;
-            } else if (norm_lrp(rng) > 1.5) {
+            if (imm_lrp >= 2) {
+                if (uni(rng) < 0.70) state.lrp = 1;
+            } else if (imm_lrp == 1) {
+                if (uni(rng) < 0.15) state.lrp = 1;
+            } else if (norm_lrp(rng) > 1.0) {
                 state.lrp = 1;
             }
         }
         // no recovery from lrp
 
-        // hrp layer — probabilistic escalation (0.5%) once already lrp and any immediate LRP neighbour
+        // hrp layer — escalate if already lrp and 2+ immediate neighbours are also lrp
         if (state.hrp == 0) {
-            if (orig_lrp == 1 && imm_lrp >= 1 && uniform(rng) < 0.005) {
+            if (orig_lrp == 1 && imm_lrp >= 2) {
                 state.hrp = 2;
             }
         }
