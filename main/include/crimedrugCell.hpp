@@ -9,8 +9,6 @@
 
 using namespace cadmium::celldevs;
 
-// Model 3 - CrimeDrug: 0=normal, 1=lrp, 2=hrp, 3=criminal, 4=incapacitated
-// Cells escalate through stages and recover one stage at a time.
 class crimedrugCell : public GridCell<crimedrugsState, double> {
 public:
     crimedrugCell(const coordinates& id,
@@ -22,61 +20,53 @@ public:
         const std::unordered_map<coordinates, NeighborData<crimedrugsState, double>>& neighborhood
     ) const override {
         static thread_local std::mt19937 rng(std::random_device{}());
-        static thread_local std::uniform_real_distribution<double> uniform(0.0, 1.0);
+        static thread_local std::normal_distribution<double> norm_lrp(0.4, 0.3);
+        static thread_local std::normal_distribution<double> norm_crime(0.4, 0.1);
+        static thread_local std::normal_distribution<double> norm_incap(0.4, 0.3);
+
+        const int orig_lrp   = state.lrp;
+        const int orig_hrp   = state.hrp;
+        const int orig_crime = state.crime;
 
         int total = 0, lrp_count = 0;
-        bool any_hrp = false, any_crime = false;
+        bool any_hrp2 = false;
         for (const auto& [nId, nData] : neighborhood) {
             ++total;
-            if (nData.state->stage >= 1) ++lrp_count;
-            if (nData.state->stage >= 2) any_hrp = true;
-            if (nData.state->stage >= 3) any_crime = true;
+            if (nData.state->lrp == 1)  ++lrp_count;
+            if (nData.state->hrp == 2)  any_hrp2 = true;
         }
-        const bool all_lrp = (total == 4 && lrp_count == 4);
+        const bool all_neighbours_lrp = (total == 4 && lrp_count == 4);
 
-        switch (state.stage) {
-            case 0:
-                // Escalate to lrp: neighbourhood influence or random adoption
-                if (all_lrp || uniform(rng) < 0.25) {
-                    state.stage = 1;
-                }
-                break;
-            case 1:
-                // Escalate to hrp when all neighbours are lrp
-                if (all_lrp) {
-                    state.stage = 2;
-                }
-                // Recovery to normal
-                else if (uniform(rng) < 0.10) {
-                    state.stage = 0;
-                }
-                break;
-            case 2:
-                // Escalate to criminal: random or peer influence from hrp neighbours
-                if (uniform(rng) < 0.20 || any_crime) {
-                    state.stage = 3;
-                }
-                // Recovery to lrp
-                else if (uniform(rng) < 0.12) {
-                    state.stage = 1;
-                }
-                break;
-            case 3:
-                // Escalate to incapacitated (arrested/hospitalised)
-                if (uniform(rng) < 0.15) {
-                    state.stage = 4;
-                }
-                // Recovery to hrp
-                else if (uniform(rng) < 0.10) {
-                    state.stage = 2;
-                }
-                break;
-            case 4:
-                // Released / rehabilitated back to criminal stage
-                if (uniform(rng) < 0.20) {
-                    state.stage = 3;
-                }
-                break;
+        // lrp layer
+        if (orig_lrp == 0) {
+            if (all_neighbours_lrp) {
+                state.lrp = 1;
+            } else if (norm_lrp(rng) > 0.6) {
+                state.lrp = 1;
+            }
+        }
+
+        // hrp layer
+        if (state.hrp == 0) {
+            if (orig_lrp == 1 && all_neighbours_lrp) {
+                state.hrp = 2;
+            }
+        }
+
+        // crime layer
+        if (orig_crime == 0) {
+            if (norm_crime(rng) > 0.6) {
+                state.crime = 3;
+            } else if (orig_hrp == 2 && any_hrp2) {
+                state.crime = 3;
+            }
+        }
+
+        // incap layer
+        if (state.incap == 0) {
+            if (orig_crime == 3 && orig_hrp == 2 && norm_incap(rng) > 0.1) {
+                state.incap = 4;
+            }
         }
 
         return state;

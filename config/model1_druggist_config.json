@@ -8,7 +8,7 @@
     "default": {
       "delay": "inertial",
       "model": "druggist",
-      "state": { "stage": 0 },
+      "state": { "lrp": 0 },
       "neighborhood": [
         { "type": "von_neumann", "range": 1 }
       ]
@@ -18,7 +18,7 @@
     {
       "colors": [[255, 255, 0], [0, 0, 255]],
       "breaks": [0, 0.5, 1],
-      "field": "stage"
+      "field": "lrp"
     }
   ]
 }
