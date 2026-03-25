@@ -11,7 +11,7 @@
       "cell_type": "crimedrug",
       "state": { "lrp": 0, "hrp": 0, "crime": 0, "incap": 0, "display": 0 },
       "neighborhood": [
-        { "type": "von_neumann", "range": 1 }
+        { "type": "von_neumann", "range": 2 }
       ]
     }
   },
