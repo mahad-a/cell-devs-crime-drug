@@ -33,8 +33,12 @@ public:
             state.lrp = 1;
         }
         // R2: random adoption
-        else if (norm(rng) > 0.7) {
+        else if (state.lrp == 0 && norm(rng) > 0.7) {
             state.lrp = 1;
+        }
+        // Recovery: ~15% chance to quit
+        else if (state.lrp == 1 && norm(rng) > 0.85) {
+            state.lrp = 0;
         }
 
         return state;

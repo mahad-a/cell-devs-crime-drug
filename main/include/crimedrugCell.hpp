@@ -44,6 +44,9 @@ public:
             } else if (norm_lrp(rng) > 0.6) {
                 state.lrp = 1;
             }
+        } else if (state.hrp == 0 && state.crime == 0 && norm_lrp(rng) > 0.85) {
+            // Recovery from lrp (only if not escalated further)
+            state.lrp = 0;
         }
 
         // hrp layer
@@ -51,6 +54,9 @@ public:
             if (orig_lrp == 1 && all_neighbours_lrp) {
                 state.hrp = 2;
             }
+        } else if (state.crime == 0 && norm_lrp(rng) > 0.80) {
+            // Recovery from hrp (only if not escalated to crime)
+            state.hrp = 0;
         }
 
         // crime layer
@@ -60,6 +66,9 @@ public:
             } else if (orig_hrp == 2 && any_hrp2) {
                 state.crime = 3;
             }
+        } else if (state.incap == 0 && norm_crime(rng) > 0.85) {
+            // Recovery from crime (only if not incapacitated)
+            state.crime = 0;
         }
 
         // incap layer
@@ -67,6 +76,9 @@ public:
             if (orig_crime == 3 && orig_hrp == 2 && norm_incap(rng) > 0.1) {
                 state.incap = 4;
             }
+        } else if (norm_incap(rng) > 0.80) {
+            // Recovery from incapacitation
+            state.incap = 0;
         }
 
         return state;
