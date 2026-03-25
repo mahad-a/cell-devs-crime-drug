@@ -1,6 +1,7 @@
 #ifndef CADMIUM_CELLDEVS_ADDICTION_CELL_HPP_
 #define CADMIUM_CELLDEVS_ADDICTION_CELL_HPP_
 
+#include <cmath>
 #include <random>
 #include <nlohmann/json.hpp>
 #include <cadmium/modeling/celldevs/grid/cell.hpp>
@@ -10,10 +11,20 @@
 using namespace cadmium::celldevs;
 
 class addictionCell : public GridCell<crimedrugsState, double> {
+    coordinates myId;
+
+    bool isImmediate(const coordinates& nId) const {
+        int dx = std::abs(nId[0] - myId[0]);
+        int dy = std::abs(nId[1] - myId[1]);
+        dx = std::min(dx, 20 - dx);
+        dy = std::min(dy, 20 - dy);
+        return (dx + dy) == 1;
+    }
+
 public:
     addictionCell(const coordinates& id,
                   const std::shared_ptr<const GridCellConfig<crimedrugsState, double>>& config)
-        : GridCell<crimedrugsState, double>(id, config) {}
+        : GridCell<crimedrugsState, double>(id, config), myId(id) {}
 
     [[nodiscard]] crimedrugsState localComputation(
         crimedrugsState state,
@@ -25,12 +36,13 @@ public:
 
         const int orig_lrp = state.lrp;
 
-        int total = 0, lrp_count = 0;
+        int imm_total = 0, imm_lrp = 0;
         for (const auto& [nId, nData] : neighborhood) {
-            ++total;
-            if (nData.state->lrp == 1) ++lrp_count;
+            if (!isImmediate(nId)) continue;
+            ++imm_total;
+            if (nData.state->lrp == 1) ++imm_lrp;
         }
-        const bool all_neighbours_lrp = (total == 4 && lrp_count == 4);
+        const bool all_neighbours_lrp = (imm_total == 4 && imm_lrp == 4);
 
         // lrp layer
         if (orig_lrp == 0) {
