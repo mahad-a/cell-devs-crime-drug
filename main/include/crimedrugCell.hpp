@@ -34,9 +34,7 @@ public:
         // per-thread rngs, initialized once per thread to avoid contention
         static thread_local std::mt19937 rng(std::random_device{}());
         static thread_local std::normal_distribution<double> norm_lrp(0.4, 0.3);
-        static thread_local std::normal_distribution<double> norm_crime(0.4, 0.1);  // tighter spread for crime onset
         static thread_local std::normal_distribution<double> norm_incap(0.4, 0.3);
-        static thread_local std::uniform_real_distribution<double> uniform(0.0, 1.0);
 
         const int orig_lrp   = state.lrp;
         const int orig_hrp   = state.hrp;
@@ -52,60 +50,39 @@ public:
             ++imm_total;
             if (nData.state->lrp == 1) ++imm_lrp;
         }
-        const bool all_neighbours_lrp = (imm_total == 4 && imm_lrp == 4);
-
-        // lrp layer
+        // lrp layer — spread if 2+ immediate neighbours are lrp, or random adoption
         if (orig_lrp == 0) {
-            if (all_neighbours_lrp) {
+            if (imm_lrp >= 2) {
                 state.lrp = 1;
             } else if (norm_lrp(rng) > 1.0) {
                 state.lrp = 1;
             }
-        } else {
-            // Recovery from lrp (only if not escalated further)
-            if (state.hrp == 0 && state.crime == 0 && uniform(rng) < 0.005) {
-                state.lrp = 0;
-            }
         }
+        // no recovery from lrp
 
-        // hrp layer
+        // hrp layer — escalate if already lrp and 2+ immediate neighbours are also lrp
         if (state.hrp == 0) {
-            if (orig_lrp == 1 && all_neighbours_lrp) {
+            if (orig_lrp == 1 && imm_lrp >= 2) {
                 state.hrp = 2;
             }
-        } else {
-            // Recovery from hrp (only if not escalated to crime)
-            if (state.crime == 0 && uniform(rng) < 0.005) {
-                state.hrp = 0;
-            }
         }
+        // no recovery from hrp
 
-        // crime layer — crime=3 is the active crime stage value
+        // crime layer — only hrp cells can escalate; trigger if any extended neighbour is hrp
         if (orig_crime == 0) {
-            if (norm_crime(rng) > 0.6) {
+            if (orig_hrp == 2 && any_hrp2) {
                 state.crime = 3;
-            } else if (orig_hrp == 2 && any_hrp2) {
-                // hrp cell surrounded by other hrp cells escalates to crime
-                state.crime = 3;
-            }
-        } else {
-            // Recovery from crime (only if not incapacitated)
-            if (state.incap == 0 && uniform(rng) < 0.005) {
-                state.crime = 0;
             }
         }
+        // no recovery from crime
 
-        // incap layer
+        // incap layer — crime+hrp cell escalates to incapacitation
         if (state.incap == 0) {
             if (orig_crime == 3 && orig_hrp == 2 && norm_incap(rng) > 0.1) {
                 state.incap = 4;
             }
-        } else {
-            // Recovery from incapacitation
-            if (uniform(rng) < 0.01) {
-                state.incap = 0;
-            }
         }
+        // no recovery from incapacitation
 
         return state;
     }

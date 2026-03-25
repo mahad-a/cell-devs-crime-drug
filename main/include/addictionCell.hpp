@@ -34,7 +34,6 @@ public:
         // per-thread rngs, initialized once per thread to avoid contention
         static thread_local std::mt19937 rng(std::random_device{}());
         static thread_local std::normal_distribution<double> norm_lrp(0.4, 0.3);
-        static thread_local std::uniform_real_distribution<double> uniform(0.0, 1.0);
 
         const int orig_lrp = state.lrp;
 
@@ -45,33 +44,23 @@ public:
             ++imm_total;
             if (nData.state->lrp == 1) ++imm_lrp;
         }
-        const bool all_neighbours_lrp = (imm_total == 4 && imm_lrp == 4);
-
-        // lrp layer
+        // lrp layer — spread if 2+ immediate neighbours are lrp, or random adoption
         if (orig_lrp == 0) {
-            if (all_neighbours_lrp) {
+            if (imm_lrp >= 2) {
                 state.lrp = 1;
             } else if (norm_lrp(rng) > 1.0) {
                 state.lrp = 1;
             }
-        } else {
-            // Recovery from lrp (only if not yet hrp)
-            if (state.hrp == 0 && uniform(rng) < 0.005) {
-                state.lrp = 0;
-            }
         }
+        // no recovery from lrp
 
-        // hrp layer
+        // hrp layer — escalate if already lrp and 2+ immediate neighbours are also lrp
         if (state.hrp == 0) {
-            if (orig_lrp == 1 && all_neighbours_lrp) {
+            if (orig_lrp == 1 && imm_lrp >= 2) {
                 state.hrp = 2;
             }
-        } else {
-            // Recovery from hrp back to lrp
-            if (uniform(rng) < 0.005) {
-                state.hrp = 0;
-            }
         }
+        // no recovery from hrp
 
         return state;
     }
