@@ -1,5 +1,0 @@
-/home/Ahmed/a2/cell-devs-crime-drug/build/CMakeFiles/edit_cache.dir
-/home/Ahmed/a2/cell-devs-crime-drug/build/CMakeFiles/rebuild_cache.dir
-/home/Ahmed/a2/cell-devs-crime-drug/build/main/CMakeFiles/crimedrug_sim.dir
-/home/Ahmed/a2/cell-devs-crime-drug/build/main/CMakeFiles/edit_cache.dir
-/home/Ahmed/a2/cell-devs-crime-drug/build/main/CMakeFiles/rebuild_cache.dir

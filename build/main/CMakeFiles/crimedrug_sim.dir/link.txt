@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/crimedrug_sim.dir/main.cpp.o -o /home/Ahmed/a2/cell-devs-crime-drug/bin/crimedrug_sim 
